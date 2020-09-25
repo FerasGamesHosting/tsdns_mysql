@@ -1,0 +1,11 @@
+{
+    "api_key": "",
+    "api_ip": "0.0.0.0",
+    "api_port": "3000",
+    "tsdns_ip": "0.0.0.0",
+    "tsdns_port": "41144",
+    "host":"0.0.0.0",
+    "database":"ts",
+    "user":"root",
+    "password":"root"
+}
