@@ -3,21 +3,36 @@ Node.js tsdns server with restful api for mysql or mariadb
 
 # how to install
 **Requirements**
--Node.js https://nodejs.org/
 
--Mysql or Mariadb
+*Node.js https://nodejs.org/
 
--- install modules
+*Mysql or Mariadb
 
-npm install
+# install modules
 
---Config file 
+`npm install`
 
-config.json
+# Config file 
 
--- Init 
+`config.json`
+```
+{
+    "api_key": "apikiiii",
+    "api_ip": "0.0.0.0",
+    "api_port": "3000",
+    "tsdns_ip": "0.0.0.0",
+    "tsdns_port": "41144",
+    "host":"0.0.0.0",
+    "database":"ts",
+    "user":"root",
+    "password":"root"
+}
 
-node server.js
+```
+
+# **Init app**
+
+`node server.js`
 
 
 # Api usage
