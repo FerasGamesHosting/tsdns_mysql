@@ -20,7 +20,7 @@ db.connect((err) => {
     console.log('MySql Connected...');
 });
 
-db.query("CREATE TABLE IF NOT EXISTS zones (id integer primary key, zone varchar(100),target varchar(50))");
+db.query("CREATE TABLE IF NOT EXISTS zones (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50))");
 
 
 app.get('/list', function (req, res) {
