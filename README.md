@@ -2,17 +2,21 @@
 Node.js tsdns server with restful api for mysql or mariadb
 
 # how to install
-Requirements
-Node.js https://nodejs.org/
-Mysql or Mariadb
+**Requirements**
+-Node.js https://nodejs.org/
+
+-Mysql or Mariadb
 
 -- install modules
+
 npm install
 
 --Config file 
+
 config.json
 
 -- Init 
+
 node server.js
 
 
