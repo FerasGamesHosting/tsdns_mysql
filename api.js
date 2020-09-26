@@ -1,98 +1,116 @@
 "use strict";
-
 var express = require('express');
 var app = express();
 var config = require('./config.json');
-const mysql = require('mysql');
+const db = require('./mysql').pool;
 
-const db = mysql.createConnection({
-  host     : config.host,
-  user     : config.user,
-  password : config.password,
-  database : config.database
+db.getConnection((error, conn) => {
+    conn.query("CREATE TABLE IF NOT EXISTS zonas (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50),port varchar(10))");
+    conn.release();
 });
-
-// Connect
-db.connect((err) => {
-    if(err){
-        throw err;
-    }
-    console.log('MySql Connected...');
-});
-
-db.query("CREATE TABLE IF NOT EXISTS zones (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50),port varchar(10))");
 
 
 app.get('/list', function (req, res) {
-  if( req.headers.authorization == config.api_key ){
-    var zone = req.params.zone;
-    db.query("SELECT * FROM zones", function(err, rows) {
-      res.send('{"result":"success","message":' + JSON.stringify( rows ) + '}');
-      console.log('Consultando base completa :o, tu ta doido!');
-    });
-  }else{
-    res.statusCode = 403;
-    res.send('{"result":"error","message":"Invalid auth token"}');
-  }
+    if (req.headers.authorization == config.api_key) {
+        var zone = req.params.zone;
+        db.getConnection((error, conn) => {
+            if (error) {
+                console.log('Erro ao conectar no banco!');
+            } else {
+                conn.query("SELECT * FROM zonas", function (err, rows) {
+                    conn.release();
+                    res.send('{"result":"success","message":' + JSON.stringify(rows) + '}');
+                    console.log('Consultando base completa :o, tu ta doido!');
+                });
+            }
+        });
+    } else {
+        res.statusCode = 403;
+        res.send('{"result":"error","message":"Invalid auth token"}');
+    }
 });
 
 app.get('/add/:zone/:target', function (req, res) {
-  if( req.headers.authorization == config.api_key ){
-    var zone = req.params.zone;
-    var ipVetor = req.params.target.split(':');
-    var target = ipVetor[0];
-    var port  = ipVetor[1];
-    if(ipVetor.length > 1)
-    {
-      db.query("SELECT * FROM zones WHERE zone=?",zone, function(err, row) {
-      if(row != '')
-      {
-        console.log("Existe!");
-      }else
-      {
-        var sql = "INSERT INTO zones(zone,target,port) VALUES(?,?)";
-        db.query(sql,[zone,target,port]);
-      }
-        res.statusCode = 201;
-        res.send('{"result":"success"}');
-        console.log('Zona: ' + zone + ' criada!');
-      });
+    if (req.headers.authorization == config.api_key) {
+        var zone = req.params.zone;
+        var ipVetor = req.params.target.split(':');
+        var target = ipVetor[0];
+        var port = ipVetor[1];
+        if (ipVetor.length > 1) {
+
+            db.getConnection((error, conn) => {
+                if (error) {
+                    console.log('Erro ao conectar no banco!');
+                } else {
+                    conn.query("SELECT * FROM zonas WHERE zone=? ", zone, function (err, rows) {
+                        if (err) {
+                            console.log('Erro ao conectar no banco!');
+                        } else {
+                            if (rows == '') {
+                                var sql = "INSERT INTO zonas(zone,target,port) VALUES(?,?,?)";
+                                conn.query(sql, [zone, target, port]);
+                                res.statusCode = 201;
+                                res.send('{"result":"success"}');
+                                console.log('Zona: ' + zone + ' criada!');
+                            } else {
+                                console.log('Registro já existe!');
+                            }
+                            conn.release();
+                        }
+                    });
+                }
+            });
+        }
+
+    } else {
+        res.statusCode = 403;
+        res.send('{"result":"error","message":"Invalid auth token"}');
     }
-      
-  }else{
-    res.statusCode = 403;
-    res.send('{"result":"error","message":"Invalid auth token"}');
-  }
 });
 
 app.get('/del/:zone', function (req, res) {
-  if( req.headers.authorization == config.api_key ){
-    var zone = req.params.zone;
-    var sql = "DELETE FROM zones WHERE zone =?";
-    db.query(sql,zone, function(err, row) {
-      res.statusCode = 202;
-      res.send('{"result":"success","message":' + JSON.stringify( row ) + '}');
-      console.log('Zona: ' + zone + ' deletada com sucesso!');
-    });
-   
-  }else{
-    res.statusCode = 403;
-    res.send('{"result":"error","message":"Invalid auth token"}');
-  }
+    if (req.headers.authorization == config.api_key) {
+        var zone = req.params.zone;
+        var sql = "DELETE FROM zonas WHERE zone =?";
+        db.getConnection((error, conn) => {
+            if (error) {
+                console.log('Erro ao conectar no banco!');
+            } else {
+                conn.query(sql, zone, function (err, row) {
+                    res.statusCode = 202;
+                    res.send('{"result":"success","message":' + JSON.stringify(row) + '}');
+                    console.log('Zona: ' + zone + ' deletada com sucesso!');
+                });
+                conn.release();
+            }
+        });
+
+    } else {
+        res.statusCode = 403;
+        res.send('{"result":"error","message":"Invalid auth token"}');
+    }
 });
 
 app.get('/get/:zone', function (req, res) {
-  if( req.headers.authorization == config.api_key ){
-    var zone = req.params.zone;
-    db.query("SELECT * FROM zones WHERE zone=?",zone, function(err, row) {
-      res.statusCode = 200;
-      res.send('{"result":"success","message":' + JSON.stringify( row ) + '}');
-      console.log('Zona: ' + zone + ' consultada com sucesso!');
-    });
-  }else{
-    res.statusCode = 403;
-    res.send('{"result":"error","message":"Invalid auth token"}');
-  }
+    if (req.headers.authorization == config.api_key) {
+        var zone = req.params.zone;
+        db.getConnection((error, conn) => {
+            if (error) {
+                console.log('Erro ao conectar no banco!');
+            } else {
+                conn.query("SELECT * FROM zonas WHERE zone=?", zone, function (err, row) {
+                    res.statusCode = 200;
+                    res.send('{"result":"success","message":' + JSON.stringify(row) + '}');
+                    console.log('Zona: ' + zone + ' consultada com sucesso!');
+                });
+                conn.release();
+            }
+        });
+    
+} else {
+        res.statusCode = 403;
+        res.send('{"result":"error","message":"Invalid auth token"}');
+    }
 });
 
 module.exports = app;
