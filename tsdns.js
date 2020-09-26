@@ -34,7 +34,7 @@ var tsdns = net.createServer(function (socket) {
         }, 60000);
         socket.on('data', function(data) {
             var domain = data.toString().replace(/\r|\n/g, '');
-            db.query("SELECT * FROM zones WHERE zone=?",domain, function(err, rows){
+            db.query("SELECT zones||';'||port FROM zones WHERE zone=?",domain, function(err, rows){
                 if( err ){
                     console.log(err);
                 }else{

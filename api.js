@@ -20,7 +20,7 @@ db.connect((err) => {
     console.log('MySql Connected...');
 });
 
-db.query("CREATE TABLE IF NOT EXISTS zones (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50))");
+db.query("CREATE TABLE IF NOT EXISTS zones (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50),port varchar(10))");
 
 
 app.get('/list', function (req, res) {
@@ -39,20 +39,25 @@ app.get('/list', function (req, res) {
 app.get('/add/:zone/:target', function (req, res) {
   if( req.headers.authorization == config.api_key ){
     var zone = req.params.zone;
-    var target = req.params.target;
-    db.query("SELECT * FROM zones WHERE zone=?",zone, function(err, row) {
-    if(row != '')
+    var ipVetor = req.params.target.split(':');
+    var target = ipVetor[0];
+    var port  = ipVetor[1];
+    if(ipVetor.length > 1)
     {
-      console.log("caiu no existe!");
-    }else
-    {
-      var sql = "INSERT INTO zones(zone,target) VALUES(?,?)";
-      db.query(sql,[zone,target]);
+      db.query("SELECT * FROM zones WHERE zone=?",zone, function(err, row) {
+      if(row != '')
+      {
+        console.log("Existe!");
+      }else
+      {
+        var sql = "INSERT INTO zones(zone,target,port) VALUES(?,?)";
+        db.query(sql,[zone,target,port]);
+      }
+        res.statusCode = 201;
+        res.send('{"result":"success"}');
+        console.log('Zona: ' + zone + ' criada!');
+      });
     }
-      res.statusCode = 201;
-      res.send('{"result":"success","message":' + JSON.stringify( row ) + '}');
-      console.log('Zona: ' + zone + ' existe!');
-    });
       
   }else{
     res.statusCode = 403;
