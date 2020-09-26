@@ -16,20 +16,23 @@ var tsdns = net.createServer(function (socket) {
     socket.on('data', function (data) {
         var domain = data.toString().replace(/\r|\n/g, '');
         db.getConnection((error, conn) => {
-            conn.query("SELECT zonas||':'||port FROM zonas WHERE zone=?", domain, function (err, rows) {
-                conn.release();
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(rows);
-                    if (rows.length) {
-                        writeEnd(rows[0].target);
+            if (error) {
+                console.log('Erro ao conectar no banco!');
+            } else {
+                conn.query("SELECT zonas||':'||port FROM zonas WHERE zone=?", domain, function (err, rows) {
+                    conn.release();
+                    if (err) {
+                        console.log(err);
                     } else {
-                        writeEnd('404');
+                        console.log(rows);
+                        if (rows.length) {
+                            writeEnd(rows[0].target);
+                        } else {
+                            writeEnd('404');
+                        }
                     }
-                }
-            });
-
+                });
+            }
         });
 
     });

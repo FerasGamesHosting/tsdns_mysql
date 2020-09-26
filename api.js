@@ -5,8 +5,12 @@ var config = require('./config.json');
 const db = require('./mysql').pool;
 
 db.getConnection((error, conn) => {
-    conn.query("CREATE TABLE IF NOT EXISTS zonas (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50),port varchar(10))");
-    conn.release();
+    if (error) {
+        console.log('Erro ao conectar no banco!');
+    } else {
+        conn.query("CREATE TABLE IF NOT EXISTS zonas (id integer primary key AUTO_INCREMENT, zone varchar(100),target varchar(50),port varchar(10))");
+        conn.release();
+    }
 });
 
 
