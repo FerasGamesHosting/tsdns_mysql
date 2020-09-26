@@ -25,7 +25,8 @@ Node.js tsdns server with restful api for mysql or mariadb
     "host":"0.0.0.0",
     "database":"ts",
     "user":"root",
-    "password":"root"
+    "password":"root",
+    "limitCon": 10
 }
 
 ```
