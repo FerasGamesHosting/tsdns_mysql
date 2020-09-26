@@ -19,14 +19,14 @@ var tsdns = net.createServer(function (socket) {
             if (error) {
                 console.log('Erro ao conectar no banco!');
             } else {
-                conn.query("SELECT CONCAT(zone,':',port) as target FROM zonas WHERE zone=?", domain, function (err, rows) {
+                conn.query("SELECT CONCAT(TARGET,':',PORT) AS TARGET FROM ZONAS WHERE ZONE=?", domain, function (err, rows) {
                     
                     if (err) {
                         console.log(err);
                     } else {
                         console.log(rows);
                         if (rows.length) {
-                            writeEnd(rows[0].target);
+                            writeEnd(rows[0]);
                         } else {
                             writeEnd('404');
                         }
