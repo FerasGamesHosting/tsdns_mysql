@@ -37,13 +37,15 @@ Node.js tsdns server with restful api for mysql or mariadb
 
 # **Transfer data for new layout**
 
-`insert into zonas
+```
+insert into zonas
 select 
     id, 
     zone, 
     SUBSTRING_INDEX(target, ':', 1) as target,
     SUBSTRING_INDEX(target, ':', -1) as port 
-from zones;`
+from zones;
+```
 
 # Api usage
 
