@@ -21,6 +21,26 @@ app.get('/list', function (req, res) {
             if (error) {
                 console.log('Erro ao conectar no banco!');
             } else {
+                conn.query("SELECT id, zone, concat(target,':',port) as target FROM zonas", function (err, rows) {
+                    conn.release();
+                    res.send('{"result":"success","message":' + JSON.stringify(rows) + '}');
+                    console.log('Consultando base completa :o, tu ta doido!');
+                });
+            }
+        });
+    } else {
+        res.statusCode = 403;
+        res.send('{"result":"error","message":"Invalid auth token"}');
+    }
+});
+
+app.get('/lists', function (req, res) {
+    if (req.headers.authorization == config.api_key) {
+        var zone = req.params.zone;
+        db.getConnection((error, conn) => {
+            if (error) {
+                console.log('Erro ao conectar no banco!');
+            } else {
                 conn.query("SELECT * FROM zonas", function (err, rows) {
                     conn.release();
                     res.send('{"result":"success","message":' + JSON.stringify(rows) + '}');
@@ -33,6 +53,7 @@ app.get('/list', function (req, res) {
         res.send('{"result":"error","message":"Invalid auth token"}');
     }
 });
+
 
 app.get('/add/:zone/:target', function (req, res) {
     if (req.headers.authorization == config.api_key) {
